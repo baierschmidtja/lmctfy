@@ -1,5 +1,5 @@
-const CACHE = "lmctfy-cache";
-const PREVIOUS_CACHE = "lmctfy-cache-v1";
+const CACHE = "lmctfy-cache-a";
+const PREVIOUS_CACHE = "lmctfy-cache";
 
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
