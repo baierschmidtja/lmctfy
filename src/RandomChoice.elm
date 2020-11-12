@@ -2,7 +2,7 @@ module RandomChoice exposing (..)
 
 
 import Browser
-import Html exposing (Attribute, Html, button, div, input, text, ul, li, br, h2, h4, p, hr)
+import Html exposing (Attribute, Html, button, div, input, text, ul, li, br, h5, h6, p, hr)
 import Html.Attributes exposing (type_, class, placeholder, value, readonly)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Json.Decode as Json
@@ -27,6 +27,8 @@ main =
 
 type alias Model =
   { choices: List String
+  , presetMagicEightBall: List String
+  , presetFood: List String
   , newChoice: String
   , chosen: String
   }
@@ -34,7 +36,38 @@ type alias Model =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model [ "Burgers", "Hoagies", "Pizza", "Sushi", "Tacos", "Cook tonight and make a big mess and have to do dishes and all that" ] "" ""
+  ( Model [] 
+     [ "As I see it, yes"
+     , "Ask again later"
+     , "Better not tell you now"
+     --, "Cannot predict now"
+     --, "Concentrate and ask again"
+     , "Don’t count on it"
+     --, "It is certain"
+     --, "It is decidedly so"
+     , "Most likely"
+     --, "My reply is no"
+     , "My sources say no"
+     , "Outlook not so good"
+     , "Outlook good"
+     --, "Reply hazy, try again"
+     --, "Signs point to yes"
+     , "Very doubtful"
+     , "Without a doubt"
+     --, "Yes"
+     --, "Yes – definitely"
+     --, "You may rely on it"
+     ]
+     [ "\u{1F354}" -- Burger
+     , "\u{1F961}" -- Chinese takeout
+     , "\u{1F96A}" -- Sandwich
+     , "\u{1F355}" -- Pizza
+     , "\u{1F363}" -- Sushi
+     , "\u{1F32E}" -- Taco
+     , "Stay home and cook \u{1F627}"
+     ]
+     ""
+     ""
   , Cmd.none
   )
   
@@ -50,6 +83,8 @@ type Msg
   | Choose
   | Chosen String
   | ClearAll
+  | PresetFood
+  | PresetMagicEightBall
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -94,6 +129,22 @@ update msg model =
       }
       , Cmd.none
       )
+
+    PresetFood ->
+      ( { model | choices = model.presetFood 
+        , newChoice = ""
+        , chosen = ""
+        }
+      , Cmd.none
+      )
+
+    PresetMagicEightBall ->
+      ( { model | choices = model.presetMagicEightBall 
+        , newChoice = ""
+        , chosen = ""
+        }
+      , Cmd.none
+      )
       
 
 removeChoice : List String -> String -> List String
@@ -116,13 +167,14 @@ view : Model -> Html Msg
 view model =
   div [ class "container" ]
     [ div [ class "pt-4" ]
-      [ h2 [] [ text "LMCTFY!" ]
-      , p [] [ text "Let me choose that for you!  Enter some choices and click Choose!" ]
+      [ h5 [] [ text "Let Me Choose that for You!" ]
       , hr [] []
       ]
-    , h4 [] [ text "Choices:" ]
-    , div [ class "form-group" ]
+    , h6[] [ text "Choices:" ]
+    , div [ class "btn-group" ]
         [ viewButton "btn btn-secondary" ClearAll "Clear All"
+        , viewButton "btn btn-secondary" PresetFood "Food"
+        , viewButton "btn btn-secondary" PresetMagicEightBall "Magic 8-Ball"
         ]
     , ul [ class "list-group" ] 
       [ viewChoices model.chosen model.choices
@@ -161,7 +213,7 @@ choiceClasses chosen choice =
 viewNewChoice : String -> Html Msg
 viewNewChoice s =
   li [ class "list-group-item" ] 
-    [ input [type_ "text", class "form-control", placeholder "New choice ...", value s, onInput NewChoice, onEnter AddChoice ] []
+    [ input [type_ "text", class "form-control", placeholder "Type a new choice and hit Enter", value s, onInput NewChoice, onEnter AddChoice ] []
     ]
 
 -- CUSTOM EVENT HANDLERS
